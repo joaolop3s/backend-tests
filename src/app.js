@@ -1,7 +1,13 @@
-const { response } = require('express')
+const { response, request } = require('express')
 const express = require('express')
-const request = require('request')
-const fetch = require('node-fetch');
+const fetch = require('node-fetch')
+const mongodb = require('mongodb')
+const MongoClient = mongodb.MongoClient
+
+
+
+const connectionURL = "mongodb://localhost:27017/mydb"
+const databaseName = "task-manager"
 const app = express()
 app.use(express.json()); //middleware 
 
@@ -56,6 +62,36 @@ app.post('/add', (req,res) => {
 
     res.send(aux)
 })
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+MongoClient.connect(connectionURL,{useNewUrlParser:true,useUnifiedTopology: true},(error,client) => {
+  if(error){
+      return console.log("Unable to connect to db")
+  }
+
+  const db = client.db(databaseName)
+
+  
+  db.collection('users').insertOne({
+      name: "tiago",
+      age:13
+  })
+
+  db.collection('users').findOne({
+    name: "tiago",
+    age:13
+  }, (err,result) => {
+    console.log(result)
+  })
+
+
+})
+
+
+
 
       
 app.listen(port, () => {
